@@ -1,0 +1,33 @@
+{% extends 'library/base.html' %}
+{% block title %} Playlist Songs {% endblock %}
+{% block body %}
+
+    {% if playlistsongs %}
+                <table class="table" border="0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Playlist</th>
+                    <th>Song</th>
+                    <th>Added</th>
+                    <th>Active</th>
+                </tr>
+                </thead>
+                <tbody>
+
+        {% for pls in playlistsongs %}
+        <tr>
+            <td><a href="{% url 'library:playlistsong_details' pls.id %}">{{ pls.id }}</a></td>
+            <td><a href="{% url 'library:playlists' %}">{{ pls.playlist }}</a></td>
+            <td><a href="{% url 'library:song_details' pls.song.id %}"> {{ pls.song }}</a></td>
+            <td>{{ pls.added }}</td>
+            <td>{{ pls.active }}</td>
+        </tr>
+        {% endfor %}
+                </tbody>
+            </table>
+
+    {% else %}
+    <h2>no playlist found connected with a song found</h2>
+    {% endif %}
+{% endblock %}

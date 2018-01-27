@@ -1,0 +1,50 @@
+{% extends 'library/base.html' %}
+{% block title %} Song {% endblock %}
+{% block body %}
+
+    {% if error_msg %}
+        <p><strong>{{ error_msg }}</strong></p>
+    {% endif %}
+
+    <table class="table" border="0">
+        <thead class="thead-inverse">
+        <tr>
+            <th>ID</th><td>{{ song.id }}</td>
+        </tr>
+        <tr>
+            <th>Name</th><td>{{ song.name }}</td>
+        </tr>
+        <tr>
+            <th>Artist</th>
+            <td><a href="{%  url 'library:artist_details' song.artist.id %}">{{ song.artist }}</a></td>
+        </tr>
+        <tr>
+            <th>Year</th><td>{{ song.year.year }}</td>
+        </tr>
+        <tr>
+            <th>Duration</th><td>{{ song.duration.hour }}:{{ song.duration.minute }}:{{ song.duration.second }}</td>
+        </tr>
+        <tr>
+            <th>Enabled</th><td>{{ song.enabled }}</td>
+        </tr>
+        <tr>
+            <th>File</th><td><a href=" {{ song.file.url }} ">{{ song.file.name }}</a></td>
+        </tr>
+
+        <tr>
+            <td>
+                <a href="{% url 'library:song_edit' song.id %}"><button type="button" class="btn btn-success btn-block">Edit</button></a></td>
+            <td>
+                <form action="{% url 'library:song_delete' song.id %}" method="post" style="display: inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-block">Delete</button>
+                </form>
+            </td>
+        </tr>
+
+        </thead>
+    </table>
+
+
+
+{% endblock %}

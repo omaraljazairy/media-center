@@ -1,0 +1,28 @@
+{% extends 'library/base.html' %}
+{% block title %} Songs {% endblock %}
+{% block body %}
+
+        <!-- looping through the songlist and creating a form for each one -->
+            <table class="table" border="0">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Year</th>
+                    <th>Added</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                    {% for song in songlist %}
+                         <tr>
+                             <td><a href="{% url 'library:song_details' song.id %}">{{ song.name }}</a></td>
+                             <td>{{ song.year.year }}</td>
+                             <td>{{ song.created }}</td>
+                         </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+
+{% endblock %}

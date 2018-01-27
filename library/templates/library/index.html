@@ -1,0 +1,7 @@
+{% extends 'library/base.html' %}
+
+{% block title %} Home {% endblock %}
+{% block body %}
+<h2>Home page</h2>
+<h2>Welcome </h2> {{ user.first_name }}  {{ user.last_name }} Last logged in : {{ user.last_login }}
+{% endblock %}

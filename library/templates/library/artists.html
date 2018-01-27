@@ -1,0 +1,30 @@
+{% extends 'library/base.html' %}
+{% block title %} Artist {% endblock %}
+{% block body %}
+
+    {% if artistlist %}
+                <table class="table" border="0">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Nationality</th>
+                    <th>Added</th>
+                </tr>
+                </thead>
+                <tbody>
+
+        {% for artist in artistlist %}
+        <tr>
+            <td><a href="{% url 'library:artist_details' artist.id %}">{{ artist.name }}</a></td>
+            <td>{{ artist.nationality }}</td>
+            <td>{{ artist.created }}</td>
+        </tr>
+        {% endfor %}
+                </tbody>
+            </table>
+
+    {% else %}
+    <h2>no artists found</h2>
+    {% endif %}
+
+{% endblock %}

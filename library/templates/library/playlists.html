@@ -1,0 +1,22 @@
+{% extends 'library/base.html' %}
+    {% block title %} Playlists {% endblock %}
+        {% block body %}
+            <table class="table" border="0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+            {% for playlist in playlists %}
+            <tr>
+                <td><a href="{% url 'library:playlist_details' playlist.id %}">{{ playlist.id }}</a></td>
+                <td>{{ playlist.name }}</td>
+                <td>{{ playlist.created }}</td>
+            </tr>
+            {% endfor %}
+                </tbody>
+            </table>
+        {% endblock %}

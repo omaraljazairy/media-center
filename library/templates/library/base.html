@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>    <meta charset="UTF-8">
+        <!-- metatag for responsive style -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title> {% block title %} Base {% endblock %} </title>
+    <!-- loading the static files from the static folder -->
+    {% load staticfiles %}
+    <!-- bootstrap stylesheet -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tangerine">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="#">
+      <img src="{% static 'mediafiles/images/navbar-icon_3.png' %}" style="display: inline-block">
+  </a>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Artists
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'library:artists' %}">List</a>
+            <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'library:artist_add' %}">Add</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Songs
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'library:songs' %}">List</a>
+            <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'library:song_add' %}">Add</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Playlists
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'library:playlists' %}">List</a>
+            <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'library:playlist_add' %}">Add</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          PlaylistSongs
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'library:pls' %}">List</a>
+            <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'library:playlistsong_add' %}">Add</a>
+        </div>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">AlarmClock</a>
+      </li>
+
+    </ul>
+    <ul class="navbar-nav my-auto mt-2 mt-lg-0">
+        <li class="nav-item">
+            {% if user.is_authenticated %}
+            <a class="nav-link" href="#" data-background-color="white">{{ user.first_name }} {{ user.last_name }}<span class="sr-only"></span></a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout'%}?next={{request.path}}">Logout</a>
+        </li>
+            {% else %}
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-background-color="white">Anonymous user<span class="sr-only"></span></a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Login</a>
+            {% endif %}
+      </li>
+
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+<div class="container">
+{% block body %}
+{% endblock %}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</div>
+</body>
+</html>
