@@ -1,10 +1,11 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from . import views
 
 app_name = 'library'
 
 urlpatterns = [
     url(r'^$',views.index, name='home'),
+#    url(r'alarmclock/', include('alarmclock.urls')),
 #    url(r'register/$',views.UserFormView.as_view(), name='register'),
 #    url(r'login/$',views.LogingFormView.as_view(), name='login'),
 #    url(r'logout/$', views.logout_user, name='logout'),

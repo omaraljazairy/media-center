@@ -22,7 +22,8 @@ from useractivity import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url('media/', include('library.urls')),
+    url('mediacenter/', include('library.urls')),
+    url('alarmclock/', include('alarmclock.urls')),
     url('accounts/', include('django.contrib.auth.urls')), #login/, logout/, password_reset/, password_change/
 ]
 

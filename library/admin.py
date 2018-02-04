@@ -1,5 +1,5 @@
 from django.contrib import admin
-from library.models import Artist, Song, Playlist, PlaylistSong, PlayedSongs
+from library.models import Artist, Song, Playlist, PlaylistSong
 # Register your models here.
 
 class ArtistAdmin(admin.ModelAdmin):
@@ -18,13 +18,10 @@ class PlaylistSongAdmin(admin.ModelAdmin):
 
     list_display = ['id','playlist','song','added','active']
 
-class PlayedSongsAdmin(admin.ModelAdmin):
-
-    list_display = ['song', 'played']
 
 
 admin.site.register(Artist, admin_class=ArtistAdmin)
 admin.site.register(Song, admin_class=SongAdmin)
 admin.site.register(Playlist,admin_class=PlaylistAdmin)
 admin.site.register(PlaylistSong,admin_class=PlaylistSongAdmin)
-admin.site.register(PlayedSongs, admin_class=PlayedSongsAdmin)
+

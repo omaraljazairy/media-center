@@ -66,10 +66,17 @@
           <a class="dropdown-item" href="{% url 'library:playlistsong_add' %}">Add</a>
         </div>
       </li>
-
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">AlarmClock</a>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown5" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          AlarmClock
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'alarmclock:alarms' %}">List</a>
+            <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'alarmclock:alarm_add' %}">Add</a>
+        </div>
       </li>
+
 
     </ul>
     <ul class="navbar-nav my-auto mt-2 mt-lg-0">

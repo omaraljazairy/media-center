@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
+
 from django.db import models
 from django.urls import reverse
-from .utils import Choices
+
+from mediacenter.utils import Choices
+
 
 class Artist(models.Model):
 
@@ -101,22 +104,3 @@ class PlaylistSong(models.Model):
 
     def __str__(self):
         return self.playlist.name + ' ' + self.song.name
-
-
-class PlayedSongs(models.Model):
-
-    song        = models.ForeignKey(
-        Song,
-        related_name='played_song',
-        on_delete=models.CASCADE
-    )
-    played      = models.DateTimeField(verbose_name="Song played time", db_index=True)
-
-
-    class Meta:
-        ordering = ('played',)
-        verbose_name_plural = "PlayedSongs"
-
-    def __str__(self):
-        return str(self.played)
-

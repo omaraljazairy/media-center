@@ -1,0 +1,36 @@
+{% extends 'library/base.html' %}
+{% block title %} Alarms {% endblock %}
+{% block body %}
+
+    {% if alarm_list %}
+                <table class="table" border="0">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Day</th>
+                    <th>Time</th>
+                    <th>Active</th>
+                    <th>Updated</th>
+                </tr>
+                </thead>
+                <tbody>
+
+        {% for alarm in alarm_list %}
+        <tr>
+            <td><a href="{% url 'alarmclock:alarm_edit' alarm.id %}">{{ alarm.name }}</a></td>
+            <td>{{ alarm.day }}</td>
+            <td>{{ alarm.hour }}</td>
+            <td>{{ alarm.active }}</td>
+            <td>{{ alarm.updated }}</td>
+        </tr>
+        {% endfor %}
+                </tbody>
+            </table>
+
+    {% else %}
+    <h2>no artists found</h2>
+    {% endif %}
+
+
+
+{% endblock %}

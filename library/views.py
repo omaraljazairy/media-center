@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views import generic
 from django.urls import reverse_lazy
 import logging
-from .models import Artist, Song, Playlist, PlaylistSong, PlayedSongs
+from .models import Artist, Song, Playlist, PlaylistSong
 from .forms import UserForm, LoginForm
 
 

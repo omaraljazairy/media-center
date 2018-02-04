@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
-    'library.apps.LibraryConfig'
+    'library.apps.LibraryConfig',
+    'alarmclock.apps.AlarmclockConfig',
+    'multiselectfield',
 ]
 
 MIDDLEWARE = [
@@ -82,10 +84,15 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'useractivity': {
-                    'handlers': ['file'],
-                    'level': 'DEBUG',
-                    'propagate': True,
+        'alarmclock': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'validator': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
     },
 }
