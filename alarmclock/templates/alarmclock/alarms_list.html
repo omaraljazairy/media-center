@@ -18,7 +18,12 @@
         {% for alarm in alarm_list %}
         <tr>
             <td><a href="{% url 'alarmclock:alarm_edit' alarm.id %}">{{ alarm.name }}</a></td>
-            <td>{{ alarm.day }}</td>
+            {% if alarm.day %}
+                <td>{{ alarm.day }}</td>
+            {% else %}
+                <td>Daily</td>
+            {% endif %}
+
             <td>{{ alarm.hour }}</td>
             <td>{{ alarm.active }}</td>
             <td>{{ alarm.updated }}</td>

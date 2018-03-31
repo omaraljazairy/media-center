@@ -3,6 +3,9 @@ from django.views.generic import CreateView, ListView, UpdateView, DeleteView, D
 from .models import Alarms, QueuedSongs, PlayedSongs
 from django.urls import reverse_lazy
 import logging
+from .scheduler import Scheduler
+from .queueprocessor import QueueProcesser
+from .forms import SchedulerForm
 
 logger = logging.getLogger('alarmclock')
 
@@ -21,7 +24,7 @@ class AlarmList(ListView):
 class AlarmCreate(CreateView):
     logger.info("create alarm")
     model = Alarms
-    fields = ('name','day','hour','total_songs','artist','playlist','active')
+    fields = ('name','day','daily','hour','total_songs','artist','playlist','active')
     success_url = reverse_lazy('alarmclock:alarms')
 
 class AlarmDetails(DetailView):
@@ -31,9 +34,10 @@ class AlarmDetails(DetailView):
 
 class AlarmUpdate(UpdateView):
     logger.info("update alarm")
+
     model = Alarms
     context_object_name = 'alarm'
-    fields = ('name', 'day', 'hour', 'total_songs', 'artist', 'playlist', 'active')
+    fields = ('name', 'day','daily','hour', 'total_songs', 'artist', 'playlist', 'active')
 
 class AlarmDelete(DeleteView):
     logger.info("delete alarm")
@@ -41,6 +45,17 @@ class AlarmDelete(DeleteView):
     success_url = reverse_lazy('alarmclock:alarms')
 
 
+def scheduler(request):
 
+    logger.debug("scheduler request : %s", request)
 
+    if request.method == 'POST':
+        form = SchedulerForm(request.POST)
+        return render(request=request, template_name='alarmclock/scheduler.html',context={'form':form,'status':'error'})
+
+    else:
+        logger.debug("get request from form")
+        schedule = Scheduler()#QueueProcesser()
+        return render(request=request, template_name='alarmclock/scheduler.html',
+                      context={'result': 'ok'})
 

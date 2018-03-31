@@ -1,10 +1,13 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from library.models import Artist, Playlist,  Song
 from mediacenter.utils import Choices
 from multiselectfield import MultiSelectField
 from django.urls import reverse
+from operator import xor
 import logging
-from .validators import validate_days, validate_artist, validate_playlist
+from .validators import validate_artist, validate_playlist
+
 
 logger = logging.getLogger('alarmclock')
 
@@ -19,7 +22,7 @@ class Alarms(models.Model):
     The scheduler will execute the scheduled alarms and add the songs in the queue.
     '''
 
-    logger.debug("alarms model")
+    days_daily_err_msg = "Either daily option is selected or a weekday."
     class Days(Choices):
         SATURDAY    = 'Saturday'
         SUNDAY      = 'Sunday'
@@ -38,13 +41,13 @@ class Alarms(models.Model):
         ('WEDNESDAY' , 'Wednesday'),
         ('THURSDAY' , 'Thursday'),
         ('FRIDAY' , 'Friday'),
-        ('DAILY' , 'Daily'),
     )
 
 
     name        = models.CharField(max_length=30, null=False, unique=True)
     #day         = models.CharField(max_length=100,choices=Days.choices(), null=False,default='Daily')
-    day         = MultiSelectField(max_length=100, choices=DAY_CHOICES, null=False, blank=False, default='Daily', validators=[validate_days])
+    day         = MultiSelectField(max_length=100, choices=DAY_CHOICES, null=True, blank=True)
+    daily       = models.BooleanField(default=False)
     hour        = models.TimeField(null=False)
     artist      = models.ForeignKey(
         Artist,
@@ -75,18 +78,35 @@ class Alarms(models.Model):
     class Meta:
 
         ordering = ('updated',)
-        verbose_name_plural = "Alarms"
+        verbose_name_plural = "Alarms" #used for the admin tool to show the name of the modelwithout the s
         unique_together = ('day', 'hour')
+        unique_together = ('daily', 'hour')
 
 
     def get_absolute_url(self):
+        ''' this is required for the update and delete views '''
         return reverse('alarmclock:alarm_details',kwargs={'pk':self.pk})
 
 
     def __str__(self):
         return self.name
 
-models.signals.pre_save.connect(validate_days,sender=Alarms)
+    def clean(self):
+
+        '''
+        Here I will check the values of the daily option and the days.
+        if both are True or False, it will raise an exception on the daily field.
+        one of the fieldsshould be True only
+        '''
+
+        logger.debug("day : %s", self.day)
+        logger.debug("daily : %s", self.daily)
+        if xor(self.daily, bool(len(self.day))) == False:
+            logger.error("msg : %s", self.days_daily_err_msg)
+            raise ValidationError({'daily':self.days_daily_err_msg}) #assiging the error to the daily field.
+        else:
+            logger.debug("the daily_day validator passed")
+
 
 class QueuedSongs(models.Model):
     '''
@@ -98,11 +118,10 @@ class QueuedSongs(models.Model):
     alarm = models.ForeignKey(
         Alarms,
         on_delete=models.CASCADE,
-        related_name='queued_alarm'
-
+        related_name='queued_alarm',
     )
 
-    scheduled   = models.DateTimeField(auto_now_add=True)
+    scheduled   = models.DateTimeField(auto_now_add=False, db_index=True)
 
     song = models.ForeignKey(
         Song,
@@ -110,15 +129,17 @@ class QueuedSongs(models.Model):
         related_name='queued_song'
     )
 
-    played  = models.BooleanField(default=False)
+    played  = models.DateTimeField(auto_now_add=False,verbose_name="Song played time", db_index=True, null=True)
+
 
     class Meta:
 
         ordering = ('scheduled',)
         verbose_name_plural = 'QueuedSongs'
+        unique_together = ('alarm', 'song')
 
     def __str__(self):
-        return self.scheduled
+        return str(self.scheduled)
 
 
 class PlayedSongs(models.Model):
@@ -136,7 +157,9 @@ class PlayedSongs(models.Model):
         related_name='played_song',
         on_delete=models.CASCADE
     )
-    played      = models.DateTimeField(verbose_name="Song played time", db_index=True)
+    played      = models.DateTimeField(auto_now_add=False,verbose_name="Song played time", db_index=True)
+
+    added       = models.DateTimeField(auto_now=True, verbose_name="song added")
 
 
     class Meta:

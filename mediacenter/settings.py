@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,6 +44,10 @@ INSTALLED_APPS = [
     'library.apps.LibraryConfig',
     'alarmclock.apps.AlarmclockConfig',
     'multiselectfield',
+    'redis_cache',
+    'django_redis',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -94,6 +100,32 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'scheduler': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'utils': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'processor': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'player': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'tasks': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+
     },
 }
 
@@ -170,8 +202,75 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://192.168.192.26:6379/0',
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'asgi_redis.RedisChannelLayer',
+        'CONFIG': {
+            'hosts':'redis://192.168.192.26:6379/0',
+            'capacity':100,
+        },
+        'ROUTING':'coinpricemonitor.routing.channel_routing',
+    },
+}
 
 #STATIC_ROOT = BASE_DIR
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'mediafiles')
 MEDIA_URL = '/mediafiles/'
+
+#CELERY settings
+
+#CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BROKER_URL = CACHES['default']['LOCATION'] #'redis://localhost:6379'
+CELERY_RESULT_BACKEND = CACHES['default']['LOCATION'] #'django-cache' #CACHES['default']['LOCATION'] #'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Amsterdam'
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 180
+}
+
+'''
+CELERY_BEAT_SCHEDULE = {
+    'add-every-30_seconds-contrab': {
+        'task': 'alarmclock.tasks.add',
+        'schedule': timedelta(seconds=90),
+        'args': (16, 16),
+    },
+    'add-every-1-minute': {
+        'task': 'alarmclock.tasks.mul',
+        'schedule': timedelta(minutes=1),
+        'args': (16, 16)
+    },
+}
+
+
+CELERY_BEAT_SCHEDULE = {
+    'add-every-minute-contrab': {
+        'task': 'alarmclock.tasks.add',
+        'schedule': crontab(minute=1),
+        'args': (16, 16),
+    },
+    'add-every-2-minute': {
+        'task': 'alarmclock.tasks.mul',
+        'schedule': crontab(minute=2),
+        'args': (16, 16)
+    },
+    'add-every-3-minute': {
+        'task': 'alarmclock.tasks.showme',
+        'schedule': crontab(minute=3),
+        'args': (1,)
+    },
+}
+'''

@@ -12,7 +12,11 @@
         </tr>
         <tr>
             <th>Days</th>
+            {% if alarm.day %}
             <td>{{ alarm.day }}</td>
+            {% else %}
+            <td>Daily</td>
+            {% endif %}
         </tr>
         <tr>
             <th>Time</th><td>{{ alarm.hour }}></td>
@@ -24,7 +28,7 @@
             <th>Artist</th><td>{{ alarm.artist }}></td>
         </tr>
         <tr>
-            <th>Playlist</th><td>{{ alarm.playlist }}></td>
+            <th>Playlist</th><td>{{ alarm.playlist }}</td>
         </tr>
         <tr>
             <td><a href="{% url 'alarmclock:alarm_edit' alarm.id %}"><button type="button" class="btn btn-success btn-block">Edit</button></a></td>

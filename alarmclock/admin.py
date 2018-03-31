@@ -4,7 +4,7 @@ from .models import PlayedSongs, Alarms, QueuedSongs
 
 class PlayedSongsAdmin(admin.ModelAdmin):
 
-    list_display = ['alarm','song', 'played']
+    list_display = ['alarm','song', 'played','added']
     list_per_page = 20
     ordering = ('-played',)
 
@@ -16,7 +16,7 @@ class AlarmsAdmin(admin.ModelAdmin):
 
 class QueuedSongsAdmin(admin.ModelAdmin):
 
-    list_display = ['alarm','scheduled','played']
+    list_display = ['alarm','scheduled','song']
 
 
 admin.site.register(PlayedSongs, admin_class=PlayedSongsAdmin)
