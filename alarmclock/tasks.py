@@ -22,15 +22,20 @@ def mul(x,y):
     logger.debug("mul_task: %s", x)
     return x * y
 
+
 @app.task
-def xsum(numbers):
-    logger.debug("xsum_task: %s", numbers)
-    return sum(numbers)
+def play_queued_songs():
+    logger.debug("running the alarmclock played_queue_songs")
+    from .queueprocessor import QueueProcesser
+    queue_processor = QueueProcesser()
+    queue_processor.play_queued_songs()
+    logger.debug("finnished the alarmclock played_queue_songs")
 
 @app.task
 def check_queue():
-    logger.debug("running the alarmclock queue")
+    logger.debug("running the alarmclock check_queue")
     from .queueprocessor import QueueProcesser
     queue_processor = QueueProcesser()
-    logger.debug("found available alarms: %s", queue_processor.alarms)
+    queue_processor.set_queued_songs()
+    logger.debug("finished the alarmclock check_queue")
 

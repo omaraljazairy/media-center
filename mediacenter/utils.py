@@ -13,7 +13,7 @@ class QuerySetConverter:
 
     def to_list(self, queryset):
         items_list = []
-        logger.debug("queryset received: %s", queryset)
+#        logger.debug("queryset received: %s", queryset)
         for item in queryset:
 #            logger.debug("item: %s", list(item.values())[0])
             items_list.append(list(item.values())[0])

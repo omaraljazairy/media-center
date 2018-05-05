@@ -1,12 +1,15 @@
 from django.db import models
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from library.models import Artist, Playlist,  Song
 from mediacenter.utils import Choices
 from multiselectfield import MultiSelectField
 from django.urls import reverse
 from operator import xor
+from datetime import datetime
 import logging
 from .validators import validate_artist, validate_playlist
+from django.utils import timezone
 
 
 logger = logging.getLogger('alarmclock')
@@ -14,6 +17,21 @@ logger = logging.getLogger('alarmclock')
 
 def validate_day(days):
     logger.info("days given : %s", days)
+
+
+class AlarmsQuerySet(models.query.QuerySet):
+
+    def available_alarms(self,date):
+        ''' get the total available active alarms '''
+
+        return self.filter(Q(day__contains = date['day']) | Q(daily = True), active=True).exclude( executed__date = timezone.now())
+
+
+class AlarmsManager(models.Manager):
+
+    def get_queryset(self):
+
+        return AlarmsQuerySet(self.model, using=self._db)        
 
 
 class Alarms(models.Model):
@@ -45,7 +63,6 @@ class Alarms(models.Model):
 
 
     name        = models.CharField(max_length=30, null=False, unique=True)
-    #day         = models.CharField(max_length=100,choices=Days.choices(), null=False,default='Daily')
     day         = MultiSelectField(max_length=100, choices=DAY_CHOICES, null=True, blank=True)
     daily       = models.BooleanField(default=False)
     hour        = models.TimeField(null=False)
@@ -72,7 +89,8 @@ class Alarms(models.Model):
     active      =   models.BooleanField(default=True)
     created     =   models.DateTimeField(auto_now_add=True)
     updated     =   models.DateTimeField(auto_now=True)
-
+    executed    =   models.DateTimeField(auto_now=False, default='2018-01-01 00:00:00', db_index=True)
+    objects     =   AlarmsManager()
 
 
     class Meta:
@@ -107,6 +125,23 @@ class Alarms(models.Model):
         else:
             logger.debug("the daily_day validator passed")
 
+class QueuedSongsQuerySet(models.query.QuerySet):
+    ''' this queryset has one function which gives the current queued alarms in the queue object '''
+
+    def get_current_queued_alarms(self):
+        ''' this function takes no arguments and returns a queryset of queued alarms which arenot processed '''
+
+        return self.filter(scheduled__lte=timezone.now(),played__isnull = True)
+
+
+class QueuedSongsManager(models.Manager):
+    ''' this class hasone methd which gives back the QuerySet object class '''
+
+    def get_queryset(self):
+        ''' this function returns the queueryset object '''
+
+        return QueuedSongsQuerySet(self.model, using=self._db)
+
 
 class QueuedSongs(models.Model):
     '''
@@ -130,6 +165,7 @@ class QueuedSongs(models.Model):
     )
 
     played  = models.DateTimeField(auto_now_add=False,verbose_name="Song played time", db_index=True, null=True)
+    objects = QueuedSongsManager()
 
 
     class Meta:
@@ -139,7 +175,17 @@ class QueuedSongs(models.Model):
         unique_together = ('alarm', 'song')
 
     def __str__(self):
-        return str(self.scheduled)
+        return str(self.scheduled.strftime('%Y-%m-%d %H:%M:%S'))
+
+
+class PlayedSongsManager(models.Manager):
+
+    ''' this manager holds all the queries needed from the PlayedSongs objects '''
+
+    def get_todays_played_alarms(self):
+        ''' this function returns a list of all the alarm_ids played in the current day '''
+        i = datetime.now()
+        return self.filter(played__gte=i.strftime('%Y-%m-%d 00:00:00')).values_list('alarm_id')
 
 
 class PlayedSongs(models.Model):
@@ -160,7 +206,7 @@ class PlayedSongs(models.Model):
     played      = models.DateTimeField(auto_now_add=False,verbose_name="Song played time", db_index=True)
 
     added       = models.DateTimeField(auto_now=True, verbose_name="song added")
-
+    objects     = PlayedSongsManager()
 
     class Meta:
         ordering = ('played',)
@@ -168,4 +214,3 @@ class PlayedSongs(models.Model):
 
     def __str__(self):
         return str(self.played)
-

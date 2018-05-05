@@ -1,10 +1,10 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import render
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
-from .models import Alarms, QueuedSongs, PlayedSongs
+from .models import Alarms
 from django.urls import reverse_lazy
 import logging
-from .scheduler import Scheduler
-from .queueprocessor import QueueProcesser
+from .tasks import check_queue, play_queued_songs
+#from .queueprocessor import QueueProcesser
 from .forms import SchedulerForm
 
 logger = logging.getLogger('alarmclock')
@@ -55,7 +55,15 @@ def scheduler(request):
 
     else:
         logger.debug("get request from form")
-        schedule = Scheduler()#QueueProcesser()
+
+        check_queue.delay()
+       # play_queued_songs.delay()
+        '''
+        processer = QueueProcesser()
+        processer.set_queued_songs()
+        processer.play_queued_songs()
+        #  logger.debug("available alarms: %s", schedule.get_scheduled_alarms())
+        '''
         return render(request=request, template_name='alarmclock/scheduler.html',
                       context={'result': 'ok'})
 

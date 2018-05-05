@@ -22,6 +22,7 @@ from useractivity import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+#    url('docs/', include('sphinxdoc.urls')),
     url('mediacenter/', include('library.urls')),
     url('alarmclock/', include('alarmclock.urls')),
     url('accounts/', include('django.contrib.auth.urls')), #login/, logout/, password_reset/, password_change/

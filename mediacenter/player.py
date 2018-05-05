@@ -49,3 +49,13 @@ class Player:
 
         except Exception as e:
             logger.error("couldn't play song: %s", song['name'])
+
+    def is_busy(self):
+        ''' chack if the player is busy '''
+        
+        logger.debug("chack if the player is busy")
+        pygame.init()
+        pygame.mixer.init()
+        check = pygame.mixer.music.get_busy()
+        logger.debug("check: %s", check)
+        return check

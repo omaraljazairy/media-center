@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-from celery.schedules import crontab
-from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -48,6 +46,9 @@ INSTALLED_APPS = [
     'django_redis',
     'django_celery_results',
     'django_celery_beat',
+#    'sphinxdoc',
+#    'haystack',
+    'django_nose',
 ]
 
 MIDDLEWARE = [
@@ -199,16 +200,29 @@ USE_L10N = False
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
+#cache backend
+CACHES2 = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'mediacenter_cache.sqlite3'),
+            },
+    'redis': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://192.168.192.26:6379/0',
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
+#cache backend
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': 'redis://192.168.192.26:6379/0',
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+            },
     }
 }
 
@@ -223,7 +237,9 @@ CHANNEL_LAYERS = {
     },
 }
 
-#STATIC_ROOT = BASE_DIR
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.0/howto/static-files/
+
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'mediafiles')
 MEDIA_URL = '/mediafiles/'
@@ -231,8 +247,8 @@ MEDIA_URL = '/mediafiles/'
 #CELERY settings
 
 #CELERY_RESULT_BACKEND = 'django-db'
-CELERY_BROKER_URL = CACHES['default']['LOCATION'] #'redis://localhost:6379'
-CELERY_RESULT_BACKEND = CACHES['default']['LOCATION'] #'django-cache' #CACHES['default']['LOCATION'] #'redis://localhost:6379'
+CELERY_BROKER_URL = 'redis://192.168.192.26:6379/0' # CACHES['redis']['LOCATION'] #'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://192.168.192.26:6379/0' # CACHES['redis']['LOCATION'] #'django-cache' #CACHES['default']['LOCATION'] #'redis://localhost:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -241,36 +257,25 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 180
 }
 
-'''
-CELERY_BEAT_SCHEDULE = {
-    'add-every-30_seconds-contrab': {
-        'task': 'alarmclock.tasks.add',
-        'schedule': timedelta(seconds=90),
-        'args': (16, 16),
-    },
-    'add-every-1-minute': {
-        'task': 'alarmclock.tasks.mul',
-        'schedule': timedelta(minutes=1),
-        'args': (16, 16)
+
+
+
+# documentation
+
+SPHINXDOC_CACHE_MINUTES = 1
+SPHINXDOC_BUILD_DIR = os.path.join(BASE_DIR,'docs')
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
 }
 
 
-CELERY_BEAT_SCHEDULE = {
-    'add-every-minute-contrab': {
-        'task': 'alarmclock.tasks.add',
-        'schedule': crontab(minute=1),
-        'args': (16, 16),
-    },
-    'add-every-2-minute': {
-        'task': 'alarmclock.tasks.mul',
-        'schedule': crontab(minute=2),
-        'args': (16, 16)
-    },
-    'add-every-3-minute': {
-        'task': 'alarmclock.tasks.showme',
-        'schedule': crontab(minute=3),
-        'args': (1,)
-    },
-}
-'''
+# unit test setting
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=tests',#, library,alarmclock',
+    '--cover-html',
+]

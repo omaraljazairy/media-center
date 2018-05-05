@@ -1,0 +1,6 @@
+Collecting django
+  Downloading Django-2.0.4-py3-none-any.whl (7.1MB)
+Collecting pytz (from django)
+  Using cached pytz-2018.3-py2.py3-none-any.whl
+Installing collected packages: pytz, django
+Successfully installed django-2.0.4 pytz-2018.3

@@ -24,6 +24,28 @@ class Artist(models.Model):
     def __str__(self):
         return self.name
 
+class SongQuerySet(models.query.QuerySet):
+    ''' this queryset returns only active and valid songs '''
+    
+    def valid_songs(self):
+        ''' returns a song which is enabled and has no "no-file" ''' 
+        
+        return self.filter(enabled= True).exclude(file__contains= 'no-file')
+
+
+    def by_artist(self, artist):
+        ''' returns the song by the artist arg '''
+
+        return self.filter(artist = artist)
+
+
+class SongManager(models.Manager):
+    ''' gets the queryset to give back a valid song '''
+
+    def get_queryset(self):
+        ''' gets the queryset method from the QuerySet class ''' 
+        return SongQuerySet(self.model, using=self._db)
+
 
 class Song(models.Model):
 
@@ -44,7 +66,7 @@ class Song(models.Model):
     enabled = models.BooleanField(default=True, db_index=True)
     favorite = models.IntegerField(db_index=True, default=1)
     file = models.FileField(upload_to='songs/', null=True, default='no-file')
-
+    objects = SongManager()
 
     class Meta:
         ordering = ('id',)
@@ -75,6 +97,22 @@ class Playlist(models.Model):
         return self.name
 
 
+class PlaylistSongQuerySet(models.query.QuerySet):
+    ''' this queryset returns only active and valid songs '''
+    
+    def valid_songs(self):
+        ''' returns a song which is enabled and has no "no-file" ''' 
+        return self.filter(song__enabled= True).exclude(song__file__contains= 'no-file')
+
+class PlaylistSongManager(models.Manager):
+    ''' gets the queryset to give back a valid song '''
+
+    def get_queryset(self):
+        ''' gets the queryset method from the QuerySet class ''' 
+        return PlaylistSongQuerySet(self.model, using=self._db)
+
+
+
 class PlaylistSong(models.Model):
 
     playlist = models.ForeignKey(
@@ -91,6 +129,8 @@ class PlaylistSong(models.Model):
 
     added = models.DateTimeField(auto_now=True, db_index=True)
     active = models.BooleanField(default=True, db_index=True)
+#    pl_valid_song = PlaylistSongManager()
+
 
     class Meta:
         ordering = ('added',)

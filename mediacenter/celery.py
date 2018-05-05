@@ -1,8 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
-from celery.schedules import crontab
-from celery import shared_task
+#from celery.schedules import crontab
+#from celery import shared_task
 from datetime import timedelta
 
 
@@ -24,24 +24,9 @@ app.conf.beat_schedule = {
         'schedule': timedelta(minutes=1),
         'args': (),
     },
-}
-
-'''
-app.conf.beat_schedule = {
-'add-every-minute-contrab': {
-        'task': 'alarmclock.tasks.add',
-        'schedule': crontab(minute=1),
-        'args': (16, 16),
-    },
-'add-every-2-minute': {
-        'task': 'alarmclock.tasks.mul',
-        'schedule': crontab(minute=2),
-        'args': (16, 16)
-    },
-'add-every-3-minute': {
-        'task': 'alarmclock.tasks.showme',
-        'schedule': crontab(minute=3),
-        'args': (1,)
+'add-every-2-minute-contrab': {
+        'task': 'alarmclock.tasks.play_queued_songs',
+        'schedule': timedelta(minutes=2),
+        'args': (),
     },
 }
-'''
