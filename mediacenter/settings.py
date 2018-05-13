@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django_redis',
     'django_celery_results',
     'django_celery_beat',
+    'django.contrib.admindocs',
 #    'sphinxdoc',
 #    'haystack',
     'django_nose',

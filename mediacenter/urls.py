@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 from useractivity import views
 
 urlpatterns = [
+    path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
 #    url('docs/', include('sphinxdoc.urls')),
     url('mediacenter/', include('library.urls')),
