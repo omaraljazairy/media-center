@@ -5,6 +5,7 @@ app_name = 'library'
 
 urlpatterns = [
     url(r'^$',views.index, name='home'),
+    url(r'^auth/', include('social_django.urls', namespace='social')),  # <- Here
 #    url(r'alarmclock/', include('alarmclock.urls')),
 #    url(r'register/$',views.UserFormView.as_view(), name='register'),
 #    url(r'login/$',views.LogingFormView.as_view(), name='login'),

@@ -27,6 +27,7 @@ urlpatterns = [
     url('mediacenter/', include('library.urls')),
     url('alarmclock/', include('alarmclock.urls')),
     url('accounts/', include('django.contrib.auth.urls')), #login/, logout/, password_reset/, password_change/
+#    url(r'^auth/', include('social_django.urls', namespace='social')),  # <- Here
 ]
 
 if settings.DEBUG:
