@@ -27,7 +27,7 @@ packaging==17.1
 pycrypto==2.6.1
 pygame==1.9.3
 Pygments==2.2.0
-PyJWT==1.6.3
+PyJWT==2.4.0
 pyparsing==2.2.0
 python-redis-lock==3.2.0
 python3-openid==3.1.0
